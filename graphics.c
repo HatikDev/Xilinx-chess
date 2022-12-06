@@ -5,6 +5,7 @@
 
 extern struct Board board;
 extern uint16_t frame[FRAMESIZE];
+extern int state;
 
 void init_frame()
 {
@@ -23,6 +24,8 @@ void init_frame()
     board.cells[6] = KNIGHT | BLACK;
     board.cells[7] = ROOK | BLACK;
 
+    board.cells[15] = KING | BLACK;
+
     for (int i = 8; i <= 15; ++i)
         board.cells[i] = PAWN | BLACK;
 
@@ -39,7 +42,7 @@ void init_frame()
         board.cells[i] = PAWN | WHITE;
 }
 
-void draw_board(cairo_t *cr)
+void draw_board()
 {
     int cellSize = HEIGHT / 8;
     int leftOffset = (WIDTH - HEIGHT) / 2;
@@ -61,17 +64,16 @@ void draw_board(cairo_t *cr)
                 for (int l = 0; l < cellSize; ++l)
                 {
                     frame[leftOffset + offsetX + k + (offsetY + l) * 640] = color;
-
                 }
             }
         }
     }
 }
 
-void draw_figure_polygon(cairo_t *cr, int x, int y, int minCellX, int minCellY, uint16_t color)
+void draw_figure_polygon(int x, int y, int minCellX, int minCellY, uint16_t color)
 {
     int globalOffset = (WIDTH - HEIGHT) / 2;
-    int cellSize = HEIGHT / 8; // it's costil
+    int cellSize = HEIGHT / 8; // TODO:refactor. It's costil
     int minCellWidth = cellSize / FIGURE_WIDTH;
     int minCellHeight = cellSize / FIGURE_HEIGHT - 1;
 
@@ -85,7 +87,7 @@ void draw_figure_polygon(cairo_t *cr, int x, int y, int minCellX, int minCellY, 
     }
 }
 
-void draw_figure(cairo_t *cr, const char** figure, int index, uint16_t color)
+void draw_figure(const char** figure, int index, uint16_t color)
 {
     int x = index % 8;
     int y = index / 8;
@@ -96,13 +98,13 @@ void draw_figure(cairo_t *cr, const char** figure, int index, uint16_t color)
         {
             if (figure[k][j] == '#')
             {
-                draw_figure_polygon(cr, x, y, j, k, color);
+                draw_figure_polygon(x, y, j, k, color);
             }
         }
     }
 }
 
-void draw_figures(cairo_t *cr)
+void draw_figures()
 {
     int cellSize = HEIGHT / 8;
     int leftOffset = (WIDTH - HEIGHT) / 2;
@@ -145,7 +147,7 @@ void draw_figures(cairo_t *cr)
         else
             color = 0xfff;
 
-        draw_figure(cr, figure, i, color);
+        draw_figure(figure, i, color);
     }
 }
 
@@ -153,36 +155,21 @@ void draw_selector(int x, int y)
 {
     int cellSize = HEIGHT / 8;
     int globalOffset = (WIDTH - HEIGHT) / 2;
+    uint16_t selectorColor = state == SELECTED ? 0xa00 : 0x00a;
 
     for (int i = x * cellSize; i < (x + 0.1) * cellSize; ++i)
-    {
         for (int j = y * cellSize; j < (y + 1) * cellSize; ++j)
-        {
-            frame[globalOffset + i + 640 * j] = 0xa00;
-        }
-    }
+            frame[globalOffset + i + 640 * j] = selectorColor;
 
     for (int i = x * cellSize; i < (x + 1) * cellSize; ++i)
-    {
         for (int j = y * cellSize; j < (y + 0.1)* cellSize; ++j)
-        {
-            frame[globalOffset + i + 640 * j] = 0xa00;
-        }
-    }
+            frame[globalOffset + i + 640 * j] = selectorColor;
 
     for (int i = (x + 0.9) * cellSize; i < (x + 1) * cellSize; ++i)
-    {
         for (int j = y * cellSize; j < (y + 1) * cellSize; ++j)
-        {
-            frame[globalOffset + i + 640 * j] = 0xa00;
-        }
-    }
+            frame[globalOffset + i + 640 * j] = selectorColor;
 
     for (int i = x * cellSize; i < (x + 1) * cellSize; ++i)
-    {
         for (int j = (y + 0.9) * cellSize; j < (y + 1) * cellSize; ++j)
-        {
-            frame[globalOffset + i + 640 * j] = 0xa00;
-        }
-    }
+            frame[globalOffset + i + 640 * j] = selectorColor;
 }

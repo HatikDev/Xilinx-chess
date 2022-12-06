@@ -18,5 +18,6 @@
 #define WHITE 0
 #define BLACK 128
 
-//#define WHITE_PAWN 1
+#define NOT_SELECTED 0
+#define SELECTED 1
 

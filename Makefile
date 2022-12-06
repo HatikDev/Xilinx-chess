@@ -1,7 +1,16 @@
-.PHONY: all clean
+.PHONY: test vga clean
 
-all:
-	gcc `pkg-config --cflags gtk+-3.0` -o gui main.c graphics.c testenvironment.c `pkg-config --libs gtk+-3.0`
+test:
+	gcc -DTESTENVIRONMENT `pkg-config --cflags gtk+-3.0` -o gui main.c graphics.c testenvironment.c `pkg-config --libs gtk+-3.0`
+
+#vga:
+#	gcc qwerty
+
+#main.o: main.c
+
+#graphics.o: graphics.c
+
+#//testenvironment.o: testenvironment.c
 
 clean:
 	rm gui
